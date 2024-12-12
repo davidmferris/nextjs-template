@@ -46,3 +46,21 @@ docker compose up
 ```bash
 npx prisma migrate dev --name <migration-name>
 ```
+
+### **Creating an API route**
+
+Add a file in the `app/api` directory corresponding to the resource you want to interact with.
+For example, to interact with the `users` resource, add a file `app/api/users/route.ts`.
+
+### **Creating a page**
+
+Add a file in the `app` directory corresponding to the page you want to create.
+For example, to create a page for the `users` resource, add a file `app/users/page.tsx`.
+
+### **Adding Prisma types**
+
+After updating the prisma schema, run the following command to generate the types so they will be available in the client:
+
+```bash
+npx prisma generate
+```
