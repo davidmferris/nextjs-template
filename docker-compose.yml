@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      DATABASE_URL: 'postgresql://devuser:devpassword@postgres:5432/devdb'
+    depends_on:
+      - postgres
+
+  migrate:
+    build:
+      context: .
+    container_name: migration_service
+    depends_on:
+      - postgres
+    entrypoint: ['./wait-for-database-ready.sh', 'postgres', 'npx prisma migrate dev']
+    environment:
+      DATABASE_URL: 'postgresql://devuser:devpassword@postgres:5432/devdb'
+    volumes:
+      - .:/app
+
+  postgres:
+    image: postgres:15
+    container_name: local_postgres
+    environment:
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpassword
+      POSTGRES_DB: devdb
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  test_postgres:
+    image: postgres:15
+    container_name: test_postgres
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpassword
+      POSTGRES_DB: testdb
+    ports:
+      - '5433:5432'
+    volumes:
+      - test_postgres_data:/var/lib/postgresql/data"
+    profiles:
+      - test
+
+volumes:
+  postgres_data:
+  test_postgres_data:
